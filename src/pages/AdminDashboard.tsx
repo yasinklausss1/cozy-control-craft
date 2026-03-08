@@ -1,50 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Mail, LogOut, Users, Settings, BarChart3 } from "lucide-react";
-import type { User } from "@supabase/supabase-js";
+import { useAuth } from "@/contexts/AuthContext";
+import { Mail, LogOut, Users, Settings, BarChart3, Power } from "lucide-react";
 
 const AdminDashboard = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { isLoggedIn, username, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-        if (!session?.user) {
-          navigate("/admin");
-        }
-        setLoading(false);
-      }
-    );
+    if (!isLoggedIn) {
+      navigate("/admin");
+    }
+  }, [isLoggedIn, navigate]);
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (!session?.user) {
-        navigate("/admin");
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    logout();
     navigate("/admin");
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">Laden...</p>
-      </div>
-    );
-  }
+  if (!isLoggedIn) return null;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -56,17 +30,15 @@ const AdminDashboard = () => {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-primary-foreground/80 text-sm hidden sm:inline">
-            {user?.email}
+            {username}
           </span>
-          <Button
-            variant="secondary"
-            size="sm"
+          <button
             onClick={handleLogout}
-            className="gap-1.5"
+            className="flex items-center gap-1.5 text-primary-foreground/90 hover:text-primary-foreground text-sm transition-colors"
           >
-            <LogOut className="h-4 w-4" />
             Abmelden
-          </Button>
+            <Power className="h-4 w-4" />
+          </button>
         </div>
       </header>
 
@@ -74,64 +46,42 @@ const AdminDashboard = () => {
         <h1 className="text-2xl font-bold text-foreground mb-6">Dashboard</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card className="border-border">
-            <CardContent className="p-6 flex items-center gap-4">
+          {[
+            { icon: Users, label: "Benutzer", value: "1.247" },
+            { icon: BarChart3, label: "Anfragen heute", value: "89" },
+            { icon: Settings, label: "System", value: "Online", valueClass: "text-green-600" },
+          ].map((item) => (
+            <div key={item.label} className="bg-card rounded-lg border border-border p-6 flex items-center gap-4">
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Users className="h-6 w-6 text-primary" />
+                <item.icon className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Benutzer</p>
-                <p className="text-2xl font-bold text-foreground">1.247</p>
+                <p className="text-sm text-muted-foreground">{item.label}</p>
+                <p className={`text-2xl font-bold ${item.valueClass || "text-foreground"}`}>{item.value}</p>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border">
-            <CardContent className="p-6 flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                <BarChart3 className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Anfragen heute</p>
-                <p className="text-2xl font-bold text-foreground">89</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border">
-            <CardContent className="p-6 flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Settings className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">System</p>
-                <p className="text-lg font-semibold text-green-600">Online</p>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          ))}
         </div>
 
-        <Card className="border-border">
-          <CardContent className="p-6">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Letzte Aktivitäten</h2>
-            <div className="space-y-3">
-              {[
-                { action: "Passwort zurückgesetzt", user: "max@gmx.de", time: "vor 5 Min." },
-                { action: "Konto gesperrt", user: "test@gmx.de", time: "vor 12 Min." },
-                { action: "Neues Konto erstellt", user: "julia@gmx.de", time: "vor 1 Std." },
-                { action: "Passwort zurückgesetzt", user: "info@gmx.de", time: "vor 2 Std." },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{item.action}</p>
-                    <p className="text-xs text-muted-foreground">{item.user}</p>
-                  </div>
-                  <span className="text-xs text-muted-foreground">{item.time}</span>
+        <div className="bg-card rounded-lg border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Letzte Aktivitäten</h2>
+          <div className="space-y-3">
+            {[
+              { action: "Passwort zurückgesetzt", user: "max@gmx.de", time: "vor 5 Min." },
+              { action: "Konto gesperrt", user: "test@gmx.de", time: "vor 12 Min." },
+              { action: "Neues Konto erstellt", user: "julia@gmx.de", time: "vor 1 Std." },
+              { action: "Passwort zurückgesetzt", user: "info@gmx.de", time: "vor 2 Std." },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{item.action}</p>
+                  <p className="text-xs text-muted-foreground">{item.user}</p>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <span className="text-xs text-muted-foreground">{item.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </main>
     </div>
   );
