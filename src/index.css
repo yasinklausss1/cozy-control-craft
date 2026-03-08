@@ -39,8 +39,13 @@ All colors MUST be HSL.
     --radius: 0.375rem;
 
     --gmx-blue: 221 70% 36%;
-    --gmx-blue-light: 221 60% 95%;
+    --gmx-blue-light: 216 41% 91%;
     --gmx-gray: 220 10% 46%;
+    --gmx-header-bg: 221 70% 36%;
+    --gmx-save: 56 30% 52%;
+    --gmx-save-foreground: 0 0% 100%;
+    --gmx-info-bg: 216 41% 91%;
+    --gmx-info-text: 220 15% 35%;
     --gmx-header-bg: 221 70% 36%;
 
     --sidebar-background: 0 0% 98%;

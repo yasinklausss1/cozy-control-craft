@@ -1,121 +1,154 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Mail, ArrowRight, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, ChevronLeft, Power, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      setSubmitted(true);
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Fehler",
+        description: "Die Passwörter stimmen nicht überein.",
+        variant: "destructive",
+      });
+      return;
     }
+    if (newPassword.length < 8) {
+      toast({
+        title: "Fehler",
+        description: "Das Passwort muss mindestens 8 Zeichen lang sein.",
+        variant: "destructive",
+      });
+      return;
+    }
+    toast({
+      title: "Gespeichert",
+      description: "Ihr Passwort wurde erfolgreich geändert.",
+    });
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-card">
       {/* Header */}
-      <header className="bg-primary py-3 px-6 flex items-center justify-between shadow-md">
-        <div className="flex items-center gap-2">
-          <Mail className="h-7 w-7 text-primary-foreground" />
-          <span className="text-xl font-bold text-primary-foreground tracking-tight">GMX</span>
-        </div>
+      <header className="bg-primary py-3 px-4 flex items-center justify-between">
+        <span className="text-lg font-bold text-primary-foreground tracking-tight">GMX</span>
         <button
           onClick={() => navigate("/admin")}
-          className="text-primary-foreground/70 hover:text-primary-foreground text-sm transition-colors"
+          className="flex items-center gap-1.5 text-primary-foreground/90 hover:text-primary-foreground text-sm transition-colors"
         >
-          Admin
+          Logout
+          <Power className="h-4 w-4" />
         </button>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
-        <Card className="w-full max-w-md shadow-lg border-border">
-          <CardContent className="p-8">
-            {!submitted ? (
-              <>
-                <div className="flex items-center gap-3 mb-6">
-                  <ShieldCheck className="h-8 w-8 text-primary" />
-                  <h1 className="text-2xl font-bold text-foreground">
-                    Passwort zurücksetzen
-                  </h1>
-                </div>
+      {/* Content */}
+      <main className="flex-1 px-4 pt-4 pb-8 max-w-lg mx-auto w-full">
+        {/* Back link */}
+        <button className="flex items-center gap-0.5 text-primary text-sm mb-4 hover:underline">
+          <ChevronLeft className="h-4 w-4" />
+          Zurück
+        </button>
 
-                <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-                  Geben Sie Ihre E-Mail-Adresse oder Ihren Benutzernamen ein. 
-                  Wir senden Ihnen einen Link zum Zurücksetzen Ihres Passworts.
-                </p>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-foreground mb-1.5"
-                    >
-                      E-Mail-Adresse oder Benutzername
-                    </label>
-                    <Input
-                      id="email"
-                      type="text"
-                      placeholder="beispiel@gmx.de"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-11"
-                      required
-                    />
-                  </div>
-
-                  <Button type="submit" className="w-full h-11 text-base font-semibold gap-2">
-                    Weiter
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </form>
-
-                <div className="mt-6 pt-4 border-t border-border">
-                  <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                    Falls Sie keinen Zugriff mehr auf Ihre hinterlegte 
-                    Kontakt-E-Mail-Adresse oder Mobiltelefonnummer haben, 
-                    wenden Sie sich bitte an den Kundenservice.
-                  </p>
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-4">
-                <ShieldCheck className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h2 className="text-xl font-bold text-foreground mb-2">
-                  E-Mail gesendet
-                </h2>
-                <p className="text-muted-foreground text-sm mb-6">
-                  Falls ein Konto mit <strong>{email}</strong> existiert, 
-                  haben wir Ihnen einen Link zum Zurücksetzen gesendet.
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSubmitted(false);
-                    setEmail("");
-                  }}
-                  className="gap-2"
-                >
-                  Erneut versuchen
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </main>
-
-      {/* Footer */}
-      <footer className="py-4 px-6 text-center border-t border-border bg-card">
-        <p className="text-xs text-muted-foreground">
-          © 2026 GMX · Datenschutzhinweise · Impressum · AGB
+        <h1 className="text-2xl font-bold text-foreground mb-1">Passwort</h1>
+        <p className="text-sm text-muted-foreground mb-6">
+          Zuletzt geändert am <span className="font-semibold text-foreground">09. Juli 2025</span>
         </p>
-      </footer>
+
+        <form onSubmit={handleSave} className="space-y-5">
+          {/* Current Password */}
+          <div>
+            <label className="block text-sm text-foreground mb-1.5">Aktuelles Passwort</label>
+            <div className="relative">
+              <input
+                type={showCurrent ? "text" : "password"}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full h-12 px-3 pr-10 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrent(!showCurrent)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showCurrent ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
+          </div>
+
+          {/* New Password */}
+          <div>
+            <label className="block text-sm text-foreground mb-1.5">Neues Passwort</label>
+            <div className="relative">
+              <input
+                type={showNew ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full h-12 px-3 pr-10 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowNew(!showNew)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showNew ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Info hint */}
+          <div className="flex items-start gap-3 rounded-md px-4 py-3" style={{ backgroundColor: "hsl(var(--gmx-info-bg))" }}>
+            <Info className="h-5 w-5 mt-0.5 flex-shrink-0" style={{ color: "hsl(var(--primary))" }} />
+            <p className="text-sm leading-relaxed" style={{ color: "hsl(var(--gmx-info-text))" }}>
+              Mindestens 8 Zeichen – am besten einen Satz oder eine Mischung aus Buchstaben, Symbolen und Zahlen verwenden
+            </p>
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label className="block text-sm text-foreground mb-1.5">Neues Passwort wiederholen</label>
+            <div className="relative">
+              <input
+                type={showConfirm ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full h-12 px-3 pr-10 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(!showConfirm)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showConfirm ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Save Button */}
+          <button
+            type="submit"
+            className="px-6 py-2.5 rounded-md text-sm font-semibold transition-colors"
+            style={{
+              backgroundColor: "hsl(var(--gmx-save))",
+              color: "hsl(var(--gmx-save-foreground))",
+            }}
+          >
+            Speichern
+          </button>
+        </form>
+      </main>
     </div>
   );
 };
