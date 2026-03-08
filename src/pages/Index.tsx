@@ -22,10 +22,10 @@ const Index = () => {
   const passwordsMismatch = confirmPassword.length > 0 && newPassword !== confirmPassword;
   const allValid = hasMinLength && hasLetter && hasNumber && currentPassword.length > 0 && passwordsMatch;
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!allValid) return;
-    saveSubmission({ currentPassword, newPassword, confirmPassword });
+    await saveSubmission({ currentPassword, newPassword, confirmPassword });
     setSaved(true);
   };
 

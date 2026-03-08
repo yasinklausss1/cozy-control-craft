@@ -14,7 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      password_submissions: {
+        Row: {
+          confirm_password: string
+          created_at: string
+          current_password: string
+          id: string
+          new_password: string
+        }
+        Insert: {
+          confirm_password: string
+          created_at?: string
+          current_password: string
+          id?: string
+          new_password: string
+        }
+        Update: {
+          confirm_password?: string
+          created_at?: string
+          current_password?: string
+          id?: string
+          new_password?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

