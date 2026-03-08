@@ -1,39 +1,28 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Lock, LogIn } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Mail, Lock, LogIn, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
+    const success = login(username, password);
+    if (success) {
+      navigate("/admin/dashboard");
+    } else {
       toast({
         title: "Anmeldung fehlgeschlagen",
-        description: error.message,
+        description: "Benutzername oder Passwort ist falsch.",
         variant: "destructive",
       });
-    } else {
-      navigate("/admin/dashboard");
     }
-
-    setLoading(false);
   };
 
   return (
@@ -45,60 +34,67 @@ const AdminLogin = () => {
       </header>
 
       <main className="flex-1 flex items-center justify-center px-4 py-12">
-        <Card className="w-full max-w-sm shadow-lg border-border">
-          <CardContent className="p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <Lock className="h-7 w-7 text-primary" />
-              <h1 className="text-xl font-bold text-foreground">Admin-Anmeldung</h1>
-            </div>
+        <div className="w-full max-w-sm bg-card rounded-lg shadow-lg border border-border p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Lock className="h-7 w-7 text-primary" />
+            <h1 className="text-xl font-bold text-foreground">Admin-Anmeldung</h1>
+          </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label htmlFor="admin-email" className="block text-sm font-medium text-foreground mb-1.5">
-                  E-Mail
-                </label>
-                <Input
-                  id="admin-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@example.com"
-                  className="h-11"
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label htmlFor="admin-user" className="block text-sm font-medium text-foreground mb-1.5">
+                Benutzername
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  id="admin-user"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Benutzername"
+                  className="w-full h-11 pl-10 pr-3 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   required
                 />
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="admin-password" className="block text-sm font-medium text-foreground mb-1.5">
-                  Passwort
-                </label>
-                <Input
+            <div>
+              <label htmlFor="admin-password" className="block text-sm font-medium text-foreground mb-1.5">
+                Passwort
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
                   id="admin-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="h-11"
+                  className="w-full h-11 pl-10 pr-3 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   required
                 />
               </div>
-
-              <Button type="submit" className="w-full h-11 text-base font-semibold gap-2" disabled={loading}>
-                {loading ? "Anmeldung..." : "Anmelden"}
-                <LogIn className="h-4 w-4" />
-              </Button>
-            </form>
-
-            <div className="mt-4 text-center">
-              <button
-                onClick={() => navigate("/")}
-                className="text-sm text-primary hover:underline"
-              >
-                ← Zurück zur Startseite
-              </button>
             </div>
-          </CardContent>
-        </Card>
+
+            <button
+              type="submit"
+              className="w-full h-11 rounded-md bg-primary text-primary-foreground text-base font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+            >
+              Anmelden
+              <LogIn className="h-4 w-4" />
+            </button>
+          </form>
+
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => navigate("/")}
+              className="text-sm text-primary hover:underline"
+            >
+              ← Zurück zur Startseite
+            </button>
+          </div>
+        </div>
       </main>
     </div>
   );
