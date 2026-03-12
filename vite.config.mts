@@ -1,16 +1,20 @@
-// vite.config.ts
+// vite.config.mts
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import path from 'path'  // ← das ist wichtig für resolve.alias
+import tailwindcss from '@tailwindcss/vite'   // ← neu!
+import path from 'path'
 
 export default defineConfig({
-  base: '/cozy-control-craft/',  // für GitHub Pages Project-Site
+  base: '/cozy-control-craft/',
 
-  plugins: [react()],
+  plugins: [
+    react(),
+    tailwindcss(),   // ← das war der fehlende Teil
+  ],
 
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),  // ← definiert @ als src/
+      '@': path.resolve(__dirname, './src'),
     },
   },
 
