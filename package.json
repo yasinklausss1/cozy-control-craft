@@ -68,4 +68,4 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
-    "@tailwind
+    "tailwindcss": "^4.0.0"
