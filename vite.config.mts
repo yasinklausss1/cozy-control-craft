@@ -5,7 +5,10 @@ import tailwindcss from '@tailwindcss/vite'   // ← neu!
 import path from 'path'
 
 export default defineConfig({
-  base: '/',
+  base: '/cozy-control-craft/',
+  build: {
+    outDir: 'docs',
+  },
 
   plugins: [
     react(),
@@ -24,10 +27,5 @@ export default defineConfig({
     hmr: {
       overlay: false,
     },
-  },
-
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
   },
 })

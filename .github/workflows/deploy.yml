@@ -34,15 +34,14 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          VITE_BASE: /
 
       - name: Prepare SPA 404 fallback
-        run: cp dist/index.html dist/404.html
+        run: cp docs/index.html docs/404.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./docs
 
   deploy:
     needs: build
