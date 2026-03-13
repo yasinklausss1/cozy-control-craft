@@ -98,6 +98,10 @@ body {
   background-color: hsl(221 70% 36%) !important;
 }
 
+.text-primary-foreground {
+  color: hsl(0 0% 100%) !important;
+}
+
 .text-primary {
   color: hsl(221 70% 36%) !important;
 }
