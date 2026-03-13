@@ -18,7 +18,7 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "hsl(221 70% 36%)", // GMX Blue
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -34,7 +34,7 @@ export default {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT: "hsl(221 70% 36%)", // GMX Blue
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
