@@ -93,3 +93,28 @@ body {
   @reference bg-background text-foreground;
 }
 
+/* Force GMX blue colors */
+.bg-primary {
+  background-color: hsl(221 70% 36%) !important;
+}
+
+.text-primary {
+  color: hsl(221 70% 36%) !important;
+}
+
+.border-primary {
+  border-color: hsl(221 70% 36%) !important;
+}
+
+.bg-accent {
+  background-color: hsl(221 70% 36%) !important;
+}
+
+.text-accent {
+  color: hsl(221 70% 36%) !important;
+}
+
+.border-accent {
+  border-color: hsl(221 70% 36%) !important;
+}
+
