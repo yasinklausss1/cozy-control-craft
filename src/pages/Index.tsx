@@ -33,8 +33,8 @@ const Index = () => {
     return (
       <div className="min-h-screen flex flex-col bg-card">
         <header className="bg-primary py-3 px-4 flex items-center justify-between">
-          <span className="text-lg font-bold text-primary-foreground tracking-tight">GMX</span>
-          <button className="flex items-center gap-1.5 text-primary-foreground/90 text-sm">
+          <span className="text-lg font-bold text-white tracking-tight">GMX</span>
+          <button className="flex items-center gap-1.5 text-white text-sm">
             Logout
             <Power className="h-4 w-4" />
           </button>
@@ -108,8 +108,8 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-card">
       {/* Header */}
       <header className="bg-primary py-3 px-4 flex items-center justify-between">
-        <span className="text-lg font-bold text-primary-foreground tracking-tight">GMX</span>
-        <button className="flex items-center gap-1.5 text-primary-foreground/90 text-sm">
+        <span className="text-lg font-bold text-white tracking-tight">GMX</span>
+        <button className="flex items-center gap-1.5 text-white text-sm">
           Logout
           <Power className="h-4 w-4" />
         </button>

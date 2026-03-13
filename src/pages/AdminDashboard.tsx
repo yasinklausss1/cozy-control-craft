@@ -41,14 +41,14 @@ const AdminDashboard = () => {
       <header className="bg-primary py-3 px-6 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-2">
           <Mail className="h-7 w-7 text-primary-foreground" />
-          <span className="text-xl font-bold text-primary-foreground tracking-tight">GMX</span>
+          <span className="text-xl font-bold text-white tracking-tight">GMX</span>
           <span className="text-primary-foreground/70 text-sm ml-2">Admin Panel</span>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-primary-foreground/80 text-sm hidden sm:inline">{username}</span>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 text-primary-foreground/90 hover:text-primary-foreground text-sm transition-colors"
+            className="flex items-center gap-1.5 text-white hover:text-white text-sm transition-colors"
           >
             Abmelden
             <Power className="h-4 w-4" />
