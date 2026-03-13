@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'   // ← neu!
 import path from 'path'
 
 export default defineConfig({
-  base: '/cozy-control-craft/',
+  base: '/',
   build: {
     outDir: 'docs',
   },
